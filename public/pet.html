@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PETHEALTH</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script>
+function showForm() {
+  document.getElementById('esteticaForm').classList.remove('hidden');
+  populateClinicOptions('clinicSelectEstetica');
+}
+
+function hideForm() {
+  document.getElementById('esteticaForm').classList.add('hidden');
+}
+
+function showExamsMenu() {
+  document.getElementById('examsMenu').classList.toggle('hidden');
+}
+
+function hideExamsMenu() {
+  document.getElementById('examsMenu').classList.add('hidden');
+}
+
+function showExamsForm() {
+  document.getElementById('examsForm').classList.remove('hidden');
+  document.getElementById('examsMenu').classList.add('hidden');
+  populateClinicOptions('clinicSelectExams');
+}
+
+function hideExamsForm() {
+  document.getElementById('examsForm').classList.add('hidden');
+}
+
+function populateClinicOptions(selectId) {
+  const clinicSelect = document.getElementById(selectId);
+  const clinics = document.querySelectorAll('#clinicList .clinic-item');
+  clinicSelect.innerHTML = '';
+  clinics.forEach(clinic => {
+    const option = document.createElement('option');
+    option.value = clinic.dataset.name;
+    option.textContent = clinic.dataset.name;
+    clinicSelect.appendChild(option);
+  });
+}
+
+function addEvent() {
+  const service = document.getElementById('service').value;
+  const date = document.getElementById('date').value;
+  const time = document.getElementById('time').value;
+  const clinic = document.getElementById('clinicSelectEstetica').value;
+
+  if (service && date && time && clinic) {
+    const eventList = document.getElementById('eventList');
+    const eventId = `event-${new Date().getTime()}`;
+    const newEvent = document.createElement('div');
+    newEvent.className = 'bg-white p-2 rounded-lg flex items-center justify-between mb-2';
+    newEvent.id = eventId;
+    newEvent.innerHTML = `
+      <div class="flex items-center">
+        <i class="fas fa-calendar-alt text-green-500"></i>
+        <div class="ml-2">
+          <p class="text-sm">${date}</p>
+          <p class="text-sm">${time}</p>
+          <p class="text-sm">${clinic}</p>
+          <p class="text-green-600 font-bold">${service.toUpperCase()}</p>
+        </div>
+      </div>
+      <button class="text-red-500 hover:text-red-700" onclick="removeEvent('${eventId}')">Cancelar</button>
+    `;
+    eventList.appendChild(newEvent);
+
+    // Clear form fields
+    document.getElementById('service').value = '';
+    document.getElementById('date').value = '';
+    document.getElementById('time').value = '';
+    document.getElementById('clinicSelectEstetica').value = '';
+    
+    // Hide form
+    document.getElementById('esteticaForm').classList.add('hidden');
+  } else {
+    alert('Por favor, preencha todos os campos.');
+  }
+}
+
+function addExam() {
+  const examName = document.getElementById('examName').value;
+  const examDate = document.getElementById('examDate').value;
+  const examTime = document.getElementById('examTime').value;
+  const clinic = document.getElementById('clinicSelectExams').value;
+
+  if (examName && examDate && examTime && clinic) {
+    const examList = document.getElementById('eventList');
+    const examId = `exam-${new Date().getTime()}`;
+    const newExam = document.createElement('div');
+    newExam.className = 'bg-white p-2 rounded-lg flex items-center justify-between mb-2';
+    newExam.id = examId;
+    newExam.innerHTML = `
+      <div class="flex items-center">
+        <i class="fas fa-calendar-alt text-blue-500"></i>
+        <div class="ml-2">
+          <p class="text-sm">${examDate}</p>
+          <p class="text-sm">${examTime}</p>
+          <p class="text-sm">${clinic}</p>
+          <p class="text-blue-600 font-bold">${examName.toUpperCase()}</p>
+        </div>
+      </div>
+      <button class="text-red-500 hover:text-red-700" onclick="removeEvent('${examId}')">Cancelar</button>
+    `;
+    examList.appendChild(newExam);
+
+    // Clear form fields
+    document.getElementById('examName').value = '';
+    document.getElementById('examDate').value = '';
+    document.getElementById('examTime').value = '';
+    document.getElementById('clinicSelectExams').value = '';
+    
+    // Hide form
+    document.getElementById('examsForm').classList.add('hidden');
+  } else {
+    alert('Por favor, preencha todos os campos.');
+  }
+}
+
+function removeEvent(eventId) {
+  const eventElement = document.getElementById(eventId);
+  if (eventElement) {
+    eventElement.remove();
+  }
+}
+
+function showClinicsModal() {
+  document.getElementById('clinicsModal').classList.remove('hidden');
+}
+
+function hideClinicsModal() {
+  document.getElementById('clinicsModal').classList.add('hidden');
+}
+
+function addClinic() {
+  const clinicName = document.getElementById('clinicName').value;
+  const clinicAddress = document.getElementById('clinicAddress').value;
+
+  if (clinicName && clinicAddress) {
+    const clinicList = document.getElementById('clinicList');
+    const clinicId = `clinic-${new Date().getTime()}`;
+    const newClinic = document.createElement('div');
+    newClinic.className = 'bg-white p-2 rounded-lg flex items-center justify-between mb-2 clinic-item';
+    newClinic.id = clinicId;
+    newClinic.dataset.name = clinicName;
+    newClinic.dataset.address = clinicAddress;
+    newClinic.innerHTML = `
+      <div class="flex items-center">
+        <div class="ml-2">
+          <p class="text-sm font-bold">${clinicName}</p>
+          <p class="text-sm">${clinicAddress}</p>
+        </div>
+      </div>
+      <div class="flex items-center">
+        <button class="text-yellow-500 hover:text-yellow-700 mr-2" onclick="editClinic('${clinicId}')">Editar</button>
+        <button class="text-red-500 hover:text-red-700" onclick="removeClinic('${clinicId}')">Remover</button>
+      </div>
+    `;
+    clinicList.appendChild(newClinic);
+
+    // Clear form fields
+    document.getElementById('clinicName').value = '';
+    document.getElementById('clinicAddress').value = '';
+  } else {
+    alert('Por favor, preencha todos os campos.');
+  }
+}
+
+function removeClinic(clinicId) {
+  const clinicElement = document.getElementById(clinicId);
+  if (clinicElement) {
+    clinicElement.remove();
+  }
+}
+
+function editClinic(clinicId) {
+  const clinicElement = document.getElementById(clinicId);
+  const clinicName = clinicElement.querySelector('p.font-bold').innerText;
+  const clinicAddress = clinicElement.querySelector('p:not(.font-bold)').innerText;
+
+  document.getElementById('clinicName').value = clinicName;
+  document.getElementById('clinicAddress').value = clinicAddress;
+
+  removeClinic(clinicId);
+}
+
+function showVaccinesModal() {
+  document.getElementById('vaccinesModal').classList.remove('hidden');
+  updateVaccineCount();
+}
+
+function hideVaccinesModal() {
+  document.getElementById('vaccinesModal').classList.add('hidden');
+}
+
+function addVaccine() {
+  const vaccineName = document.getElementById('vaccineName').value;
+  const vaccineDate = document.getElementById('vaccineDate').value;
+
+  if (vaccineName && vaccineDate) {
+    const vaccineList = document.getElementById('vaccineList');
+    const vaccineId = `vaccine-${new Date().getTime()}`;
+    const newVaccine = document.createElement('div');
+    newVaccine.className = 'bg-white p-2 rounded-lg flex items-center justify-between mb-2 vaccine-item';
+    newVaccine.id = vaccineId;
+    newVaccine.dataset.name = vaccineName;
+    newVaccine.dataset.date = vaccineDate;
+    newVaccine.innerHTML = `
+      <div class="flex items-center">
+        <div class="ml-2">
+          <p class="text-sm font-bold">${vaccineName}</p>
+          <p class="text-sm">${vaccineDate}</p>
+        </div>
+      </div>
+      <div class="flex items-center">
+        <button class="text-red-500 hover:text-red-700" onclick="removeVaccine('${vaccineId}')">Remover</button>
+      </div>
+    `;
+    vaccineList.appendChild(newVaccine);
+
+    // Clear form fields
+    document.getElementById('vaccineName').value = '';
+    document.getElementById('vaccineDate').value = '';
+
+    updateVaccineCount();
+  } else {
+    alert('Por favor, preencha todos os campos.');
+  }
+}
+
+function removeVaccine(vaccineId) {
+  const vaccineElement = document.getElementById(vaccineId);
+  if (vaccineElement) {
+    vaccineElement.remove();
+  }
+  updateVaccineCount();
+}
+
+function updateVaccineCount() {
+  const vaccineCount = document.querySelectorAll('#vaccineList .vaccine-item').length;
+  document.getElementById('vaccineCount').textContent = `Vacinas Tomadas: ${vaccineCount}`;
+}
+
+function loadImage(event) {
+  const image = document.getElementById('petImage');
+  image.src = URL.createObjectURL(event.target.files[0]);
+}
+
+function updatePetInfo() {
+  const petName = document.getElementById('petName').value;
+  const petType = document.getElementById('petType').value;
+  const petBreed = document.getElementById('petBreed').value;
+
+  document.getElementById('petNameDisplay').textContent = petName;
+  document.getElementById('petTypeDisplay').textContent = petType;
+  document.getElementById('petBreedDisplay').textContent = petBreed;
+}
+
+</script>
+</head>
+<body class="bg-green-100">
+  <div class="container mx-auto my-4 p-4 bg-white rounded-lg shadow-lg">
+    <header class="flex justify-between items-center pb-4 border-b border-green-200">
+      <h1 class="text-xl text-green-600 font-bold">PETHEALTH</h1>
+    </header>
+    
+    <section class="mt-4">
+      <div class="flex gap-4">
+        <div class="flex-1 bg-green-200 p-4 rounded-lg">
+          <img id="petImage" src="images/logo.jpeg" alt="Pet Image" class="rounded-lg mb-2 w-full h-48 object-cover">
+          <input type="file" accept="image/*" onchange="loadImage(event)" class="mb-2">
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-gray-700">Nome do Pet</label>
+            <input type="text" id="petName" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" value="Pati" oninput="updatePetInfo()">
+          </div>
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-gray-700">Tipo</label>
+            <select id="petType" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" onchange="updatePetInfo()">
+              <option value="Canino">Canino</option>
+              <option value="Felino">Felino</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-gray-700">Raça</label>
+            <select id="petBreed" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" onchange="updatePetInfo()">
+              <option value="Labrador">Labrador</option>
+              <option value="Bulldog">Bulldog</option>
+              <option value="Poodle">Poodle</option>
+              <option value="Persa">Persa</option>
+              <option value="Siamês">Siamês</option>
+              <option value="Maine Coon">Maine Coon</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex-1">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="text-center p-2 bg-green-300 rounded-lg cursor-pointer hover:bg-green-400" onclick="showForm()">
+              ESTÉTICA
+            </div>
+            <div class="text-center p-2 bg-green-300 rounded-lg cursor-pointer hover:bg-green-400" onclick="showClinicsModal()">
+              CLÍNICA
+            </div>
+            <div class="text-center p-2 bg-green-300 rounded-lg cursor-pointer hover:bg-green-400" onclick="showExamsMenu()">
+              EXAMES
+            </div>
+            <div class="text-center p-2 bg-green-300 rounded-lg cursor-pointer hover:bg-green-400" onclick="showVaccinesModal()">
+              VACINAS
+            </div>
+            <div class="text-center p-2 bg-green-300 rounded-lg cursor-pointer hover:bg-green-400">
+              Imprimir Modelo
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-4 hidden" id="esteticaForm">
+      <div class="bg-green-200 p-4 rounded-lg relative">
+        <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onclick="hideForm()">X</button>
+        <h3 class="font-semibold">Agendar Estética</h3>
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700">Serviço</label>
+          <select id="service" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+            <option value="">Selecione um serviço</option>
+            <option value="Banho e Tosa Completo">Banho e Tosa Completo</option>
+            <option value="Hidratação">Hidratação</option>
+            <option value="Escovação de Dentes">Escovação de Dentes</option>
+            <option value="Limpeza de Ouvidos">Limpeza de Ouvidos</option>
+          </select>
+        </div>
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700">Data</label>
+          <input type="date" id="date" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700">Hora</label>
+          <input type="time" id="time" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700">Clínica</label>
+          <select id="clinicSelectEstetica" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+            <option value="">Selecione uma clínica</option>
+          </select>
+        </div>
+        <div class="flex justify-end mt-4">
+          <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200" onclick="addEvent()">Agendar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-4 hidden" id="examsMenu">
+      <div class="bg-green-200 p-4 rounded-lg relative">
+        <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onclick="hideExamsMenu()">X</button>
+        <h3 class="font-semibold">Exames</h3>
+        <div class="mt-2">
+          <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200 mb-2" onclick="showExamsForm()">Cadastrar Novo Exame</button>
+          <!-- Lista de Exames (pode ser populada com JavaScript posteriormente) -->
+          <div id="examsList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-4 hidden" id="examsForm">
+      <div class="bg-green-200 p-4 rounded-lg relative">
+        <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onclick="hideExamsForm()">X</button>
+        <h3 class="font-semibold">Cadastrar Novo Exame</h3>
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700">Nome do Exame</label>
+          <input type="text" id="examName" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700">Data</label>
+          <input type="date" id="examDate" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700">Hora</label>
+          <input type="time" id="examTime" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700">Clínica</label>
+          <select id="clinicSelectExams" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+            <option value="">Selecione uma clínica</option>
+          </select>
+        </div>
+        <div class="flex justify-end mt-4">
+          <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200" onclick="addExam()">Cadastrar</button>
+        </div>
+      </div>
+    </section>
+    
+    <section class="mt-4">
+      <div class="bg-green-200 p-4 rounded-lg">
+        <h3 class="font-semibold">Eventos</h3>
+        <div class="mt-2" id="eventList">
+          <!-- Eventos de estética e exames serão listados aqui -->
+        </div>
+        <div class="flex justify-end mt-2">
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal de Clínicas -->
+  <div id="clinicsModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 relative">
+      <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onclick="hideClinicsModal()">X</button>
+      <h2 class="text-xl font-bold mb-4">Lista de Clínicas</h2>
+      <div id="clinicList" class="mb-4">
+        <!-- Lista de clínicas será adicionada aqui -->
+      </div>
+      <div class="flex flex-col mb-4">
+        <label class="block text-sm font-medium text-gray-700">Nome da Clínica</label>
+        <input type="text" id="clinicName" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+      </div>
+      <div class="flex flex-col mb-4">
+        <label class="block text-sm font-medium text-gray-700">Endereço</label>
+        <input type="text" id="clinicAddress" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+      </div>
+      <div class="flex justify-end">
+        <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200 mr-2" onclick="addClinic()">Adicionar</button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200" onclick="hideClinicsModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Vacinas -->
+  <div id="vaccinesModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 relative">
+      <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onclick="hideVaccinesModal()">X</button>
+      <h2 class="text-xl font-bold mb-4">Lista de Vacinas</h2>
+      <div id="vaccineCount" class="mb-4">Vacinas Tomadas: 0</div>
+      <div id="vaccineList" class="mb-4">
+        <!-- Lista de vacinas será adicionada aqui -->
+      </div>
+      <div class="flex flex-col mb-4">
+        <label class="block text-sm font-medium text-gray-700">Nome da Vacina</label>
+        <input type="text" id="vaccineName" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+      </div>
+      <div class="flex flex-col mb-4">
+        <label class="block text-sm font-medium text-gray-700">Data</label>
+        <input type="date" id="vaccineDate" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+      </div>
+      <div class="flex justify-end">
+        <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200 mr-2" onclick="addVaccine()">Adicionar</button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200" onclick="hideVaccinesModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
